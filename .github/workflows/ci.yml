@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Optional: least-privilege default
+permissions:
+  contents: read
+
+jobs:
+  precommit:
+    name: pre-commit (lint/format/tests)
+    runs-on: ubuntu-latest
+    # Run on PRs, and on pushes to main
+    if: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        id: py
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: "2.2.0"
+
+      - name: Enable in-project venv
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache Poetry venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.py.outputs.python-version }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      # Runs all hooks defined in pre-commit (e.g., ruff, pytest, mypy)
+      - name: Run pre-commit on all files
+        run: |
+          poetry run pre-commit install
+          poetry run pre-commit run --all-files

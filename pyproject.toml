@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "xlsx-reader"
+version = "0.1.0"
+description = "Excel file reader for payment terms comparison"
+authors = ["Student Project"]
+readme = "README.md"
+packages = [{include = "xlsx_reader"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+openpyxl = "^3.1.0"
+pywin32 = "^306"
+ruff = "^0.13.1"
+mypy = "^1.18.2"
+pre-commit = "^4.3.0"
+pytest-cov = "^7.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+types-pywin32 = "^311.0.0.20250915"
+types-openpyxl = "^3.1.5.20250919"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "N", "W", "I", "UP", "B", "D"]
+ignore = ["E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "D",
+    "N802",
+    "N803",
+    "S101",
+    "PLR2004",
+]
+[tool.ruff.lint.mccabe]
+max-complexity = 10

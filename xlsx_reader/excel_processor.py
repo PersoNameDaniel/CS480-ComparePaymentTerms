@@ -195,7 +195,38 @@ def compare_payment_terms(
             - matching_count (int): Count of terms with identical ID and name.
               Example: 5
     """
-    raise NotImplementedError("Function not yet implemented")
+    qb_terms_dict = {term.term_id: term.name for term in qb_terms}
+    excel_terms_dict = {term.term_id: term.name for term in excel_terms}
+
+    same_id_diff_name = []
+    only_in_excel = []
+    only_in_qb = []
+    matching_count = 0
+
+    # Check Excel terms against QB terms
+    for excel_term in excel_terms:
+        qb_name = qb_terms_dict.get(excel_term.term_id)
+        if qb_name is None:
+            # Term ID not found in QB - needs to be added
+            only_in_excel.append(excel_term)
+        elif qb_name != excel_term.name:
+            # Term ID found but names differ
+            same_id_diff_name.append((excel_term.name, qb_name, excel_term.term_id))
+        else:
+            # Exact match
+            matching_count += 1
+
+    # Check QB terms against Excel terms to find those only in QB
+    for qb_term in qb_terms:
+        if qb_term.term_id not in excel_terms_dict:
+            only_in_qb.append(qb_term)
+
+    return TermComparison(
+        same_id_diff_name=same_id_diff_name,
+        only_in_excel=only_in_excel,
+        only_in_qb=only_in_qb,
+        matching_count=matching_count,
+    )
 
 
 def create_payment_terms_batch_qbxml(payment_terms: list[PaymentTerm]) -> str:

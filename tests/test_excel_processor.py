@@ -15,7 +15,6 @@ from xlsx_reader.excel_processor import (
     TermComparison,
     compare_payment_terms,
     create_payment_terms_batch_qbxml,
-    get_qb_payment_terms,
     process_payment_terms,
     read_payment_terms,
     save_payment_terms_to_quickbooks,

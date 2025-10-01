@@ -17,7 +17,7 @@ if __name__ == "__main__":
     try:
         result = process_payment_terms(excel_file)
         print("\n=== Summary ===")
-        print(f"Completed successfully!")
+        print("Completed successfully!")
         print(f"- Matching terms: {result.matching_count}")
         print(f"- Terms with same ID but different names: {len(result.same_id_diff_name)}")
         print(f"- Terms only in Excel (added to QB): {len(result.only_in_excel)}")
